@@ -1,7 +1,7 @@
 
-# 🚀 GAMERA Simulation Viewer
+# 🚀 GAMERA-gui : GAMERA Simulation Viewer
 
-The **GAMERA-gui : GAMERA Simulation Viewer** is a python-based GUI application designed to visualize and analyze GAMERA simulation HDF5 files. It provides functionalities to load, navigate, and plot data interactively.
+The **GAMERA-gui** is a python-based GUI application designed to visualize and analyze GAMERA simulation HDF5 files. It provides functionalities to load, navigate, and plot data interactively.
 
 ---
 

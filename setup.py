@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="GAMERA-gui",  # Replace with your project name
-    version="1.0.1",
+    version="1.0.2",
     author="Devojyoti Kansabanik",
     author_email="dkansabanik@ucar.edu",
     description="GAMERA MHD simulation GUI viewer",

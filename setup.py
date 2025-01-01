@@ -1,22 +1,27 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name="GAMERA-gui",                      # Name of the package
-    version="1.0.0",                       # Version
-    description="GAMERA Simulation GUI", # Short description
+    name="GAMERA-gui",  # Replace with your project name
+    version="1.0.0",
     author="Devojyoti Kansabanik",
     author_email="dkansabanik@ucar.edu",
-    py_modules=["gamera_gui"],              # The script name (without .py)
-    entry_points={
-        "console_scripts": [
-            "gamera-gui = gamera_gui:main",  # Command-line entry point
-        ]
-    },
+    description="GAMERA MHD simulation GUI viewer",
+    long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
+    url="https://github.com/devojyoti96/GAMERA-gui",  # Replace with your repo URL
+    packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
     python_requires=">=3.7",
+    install_requires=[
+        "numpy",
+        "h5py",
+        "matplotlib",
+        "PyQt5",
+        "astropy",
+    ],
 )
 

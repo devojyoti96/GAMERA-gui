@@ -1,11 +1,7 @@
 
 # 🚀 GAMERA Simulation Viewer
 
-<p align="center">
-  <img src="https://via.placeholder.com/200x100.png?text=GAMERA" alt="GAMERA Logo" width="200">
-</p>
-
-The **GAMERA-gui : GAMERA Simulation Viewer** is a PyQt5-based GUI application designed to visualize and analyze GAMERA simulation HDF5 files. It provides functionalities to load, navigate, and plot data interactively.
+The **GAMERA-gui : GAMERA Simulation Viewer** is a python-based GUI application designed to visualize and analyze GAMERA simulation HDF5 files. It provides functionalities to load, navigate, and plot data interactively.
 
 ---
 
@@ -68,19 +64,6 @@ To install and set up **GAMERA-gui**, follow these steps:
 
 ---
 
-## 🖼 Screenshots
-
-<p align="center">
-  <img src="https://via.placeholder.com/800x400.png?text=Screenshot+1" alt="Screenshot 1" width="80%">
-</p>
-
-<p align="center">
-  <img src="https://via.placeholder.com/800x400.png?text=Screenshot+2" alt="Screenshot 2" width="80%">
-</p>
-
-
----
-
 ## 📄 License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
@@ -88,5 +71,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ---
 
 <p align="center">
-  <b>Made with ❤️ by [Devojyoti Kansabanik](https://github.com/username)</b>
+  <b>Made by <a href="https://github.com/devojyoti96">Devojyoti Kansabanik</b>
 </p>

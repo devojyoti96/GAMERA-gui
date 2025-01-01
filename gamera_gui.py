@@ -28,12 +28,13 @@ from matplotlib.animation import FuncAnimation
 plt.rcParams.update({"font.size": 13})
 warnings.filterwarnings("ignore")
 
+
 # Class: extract_GAMERA_simulation
 class extract_GAMERA_simulation:
     def __init__(self, filename):
         self.filename = filename
         self.h5_data = h5py.File(self.filename)
-        self.keys=list(self.h5_data.keys())
+        self.keys = list(self.h5_data.keys())
         self.X = self.h5_data["X"][:]
         self.Y = self.h5_data["Y"][:]
         self.Z = self.h5_data["Z"][:]
@@ -46,7 +47,7 @@ class extract_GAMERA_simulation:
 
         self.mjd_times = self.h5_data["timeAttributeCache"]["MJD"][:]
         self.ntime = len(self.mjd_times)
-                  
+
         if (
             "Br" not in self.quantitites
             or "Btheta" not in self.quantitites
@@ -117,35 +118,37 @@ class extract_GAMERA_simulation:
             self.quantitites = list(self.h5_data["Step#0"].keys())
         if "timeseries" not in self.keys:
             self.h5_data.close()
-            rate=0.9856 
+            rate = 0.9856
             with h5py.File(self.filename, "a") as hdf:
-                group=hdf.create_group("timeseries")
+                group = hdf.create_group("timeseries")
                 for quantity in self.quantitites:
-                    y_value=[]
+                    y_value = []
                     for i in range(self.ntime):
-                        time_diff=self.mjd_times[i]-self.mjd_times[0]
-                        earth_X=214*np.cos(np.deg2rad(rate)*time_diff)
-                        earth_Y=214*np.sin(np.deg2rad(rate)*time_diff)
-                        data=hdf["Step#"+str(i)][quantity][:]
-                        shape=data.shape
+                        time_diff = self.mjd_times[i] - self.mjd_times[0]
+                        earth_X = 214 * np.cos(np.deg2rad(rate) * time_diff)
+                        earth_Y = 214 * np.sin(np.deg2rad(rate) * time_diff)
+                        data = hdf["Step#" + str(i)][quantity][:]
+                        shape = data.shape
                         two_D_data = data[:, int(shape[1] / 2), :]
                         ec_r = self.r[0, int(shape[1] / 2), : shape[2]]
                         ec_phi = self.phi[: shape[0], int(shape[1] / 2), 0]
                         R, Phi = np.meshgrid(ec_r, ec_phi)
                         X = R * np.cos(np.deg2rad(Phi))
-                        Y = R * np.sin(np.deg2rad(Phi))    
-                        distances = np.sqrt((X - earth_X)**2 + (Y - earth_Y)**2)
+                        Y = R * np.sin(np.deg2rad(Phi))
+                        distances = np.sqrt((X - earth_X) ** 2 + (Y - earth_Y) ** 2)
                         # Find the indices of the nearest point
-                        nearest_idx = np.unravel_index(np.argmin(distances), distances.shape)
+                        nearest_idx = np.unravel_index(
+                            np.argmin(distances), distances.shape
+                        )
                         # Get the value of the nearest point in the data array
-                        y_value.append(two_D_data[nearest_idx[0],nearest_idx[1]])
-                    y_value=np.array(y_value)
-                    group.create_dataset(quantity,data=y_value)
+                        y_value.append(two_D_data[nearest_idx[0], nearest_idx[1]])
+                    y_value = np.array(y_value)
+                    group.create_dataset(quantity, data=y_value)
         self.h5_data = h5py.File(self.filename)
         self.quantitites = list(self.h5_data["Step#0"].keys())
 
     def get_plot_ranges(self, quantity=""):
-        timestamp = self.mjd_times[int(self.ntime/2)]
+        timestamp = self.mjd_times[int(self.ntime / 2)]
         self.access_fulldata(timestamp, quantity=quantity)
         self.vmin = np.nanmin(self.fulldata) * 0.2
         self.vmax = np.nanmax(self.fulldata) * 0.2
@@ -177,7 +180,12 @@ class extract_GAMERA_simulation:
             "Vx",
             "Vy",
             "Vz",
-            "Br","Btheta","Bphi","Vr","Vtheta","Vphi"
+            "Br",
+            "Btheta",
+            "Bphi",
+            "Vr",
+            "Vtheta",
+            "Vphi",
         ]:
             self.fulldata = self.h5_data["Step#" + str(timeindex)][quantity][:]
         else:
@@ -208,17 +216,17 @@ class extract_GAMERA_simulation:
             two_D_Y = R * np.sin(np.deg2rad(Phi))
             return two_D_X, two_D_Y, two_D_data
         else:
-            shape=self.fulldata.shape
-            phi = np.deg2rad(self.phi[:shape[0],:shape[1],:shape[2]]) % (2 * np.pi)
-            X=self.X[:shape[0],:shape[1],:shape[2]]
-            Z=self.Z[:shape[0],:shape[1],:shape[2]]
-            data_cube=self.fulldata
-            
+            shape = self.fulldata.shape
+            phi = np.deg2rad(self.phi[: shape[0], : shape[1], : shape[2]]) % (2 * np.pi)
+            X = self.X[: shape[0], : shape[1], : shape[2]]
+            Z = self.Z[: shape[0], : shape[1], : shape[2]]
+            data_cube = self.fulldata
+
             # Filter for the YZ-plane (phi ~ 90° or pi/2)
             phi_target = 0
             phi_tolerance = np.pi / 180  # 1 degree in radians
             mask = np.abs(phi - phi_target) < phi_tolerance
-            
+
             # Apply the mask to extract Y, Z, and data values
             masked_X = np.ma.masked_array(X, mask=~mask)
             masked_Z = np.ma.masked_array(Z, mask=~mask)
@@ -227,13 +235,15 @@ class extract_GAMERA_simulation:
             # Reshape the masked arrays to 2D
             X_2D_0 = masked_X[mask].reshape(masked_X.shape[1], masked_X.shape[2])
             Z_2D_0 = masked_Z[mask].reshape(masked_Z.shape[1], masked_Z.shape[2])
-            data_2D_0 = masked_data[mask].reshape(masked_data.shape[1], masked_data.shape[2])
-            
+            data_2D_0 = masked_data[mask].reshape(
+                masked_data.shape[1], masked_data.shape[2]
+            )
+
             # Filter for the YZ-plane (phi ~ 90° or pi/2)
-            phi_target = np.pi 
+            phi_target = np.pi
             phi_tolerance = np.pi / 180  # 1 degree in radians
             mask = np.abs(phi - phi_target) < phi_tolerance
-            
+
             # Apply the mask to extract Y, Z, and data values
             masked_X = np.ma.masked_array(X, mask=~mask)
             masked_Z = np.ma.masked_array(Z, mask=~mask)
@@ -242,8 +252,11 @@ class extract_GAMERA_simulation:
             # Reshape the masked arrays to 2D
             X_2D_1 = masked_X[mask].reshape(masked_X.shape[1], masked_X.shape[2])
             Z_2D_1 = masked_Z[mask].reshape(masked_Z.shape[1], masked_Z.shape[2])
-            data_2D_1 = masked_data[mask].reshape(masked_data.shape[1], masked_data.shape[2])
-            return X_2D_0,Z_2D_0,data_2D_0,X_2D_1,Z_2D_1,data_2D_1
+            data_2D_1 = masked_data[mask].reshape(
+                masked_data.shape[1], masked_data.shape[2]
+            )
+            return X_2D_0, Z_2D_0, data_2D_0, X_2D_1, Z_2D_1, data_2D_1
+
 
 # Class: HDF5Plotter
 class HDF5Plotter(QMainWindow):
@@ -260,10 +273,10 @@ class HDF5Plotter(QMainWindow):
         else:
             width = height
         self.setGeometry(
-            (screen.width() - 2*width) // 2,
-            (screen.height() - 2*height) // 2,
-            int(1.5*width),
-            2*height,
+            (screen.width() - 2 * width) // 2,
+            (screen.height() - 2 * height) // 2,
+            int(1.5 * width),
+            2 * height,
         )
         # Central widget
         self.central_widget = QWidget()
@@ -319,12 +332,12 @@ class HDF5Plotter(QMainWindow):
         self.save_button = QPushButton("Save Plot")
         self.save_button.clicked.connect(self.save_plot)
         self.control_layout.addWidget(self.save_button)
-        
+
         # Save button
         self.save_button = QPushButton("Save Movie")
         self.save_button.clicked.connect(self.save_movie)
         self.control_layout.addWidget(self.save_button)
-        
+
         # Customize slider to remove blue color
         palette = QPalette()
         palette.setColor(
@@ -338,9 +351,9 @@ class HDF5Plotter(QMainWindow):
         # Matplotlib figure
         self.figure = plt.figure(figsize=(15, 20), constrained_layout=True)
         self.canvas = FigureCanvas(self.figure)
-        self.ax0 = plt.subplot2grid((4, 4), (0, 0), colspan=2, rowspan =3)
-        self.ax1 = plt.subplot2grid((4, 4), (0, 2), colspan=2, rowspan =3)
-        self.ax2 = plt.subplot2grid((4, 4), (3, 0),  colspan=4, rowspan=1)
+        self.ax0 = plt.subplot2grid((4, 4), (0, 0), colspan=2, rowspan=3)
+        self.ax1 = plt.subplot2grid((4, 4), (0, 2), colspan=2, rowspan=3)
+        self.ax2 = plt.subplot2grid((4, 4), (3, 0), colspan=4, rowspan=1)
         self.main_layout.addWidget(self.canvas)
         self.figure.patch.set_facecolor("white")
         self.ax0.set_facecolor("white")
@@ -358,7 +371,7 @@ class HDF5Plotter(QMainWindow):
             spine.set_visible(False)
         for spine in self.ax2.spines.values():
             spine.set_visible(False)
-    
+
         # Timer for playback
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.play_continuous)
@@ -372,16 +385,16 @@ class HDF5Plotter(QMainWindow):
         self.quantity = None
         self.current_frame = 0
         self.is_playing = False
-        self.vline=None
-        self.cbar=None
-    
+        self.vline = None
+        self.cbar = None
+
     def save_movie(self):
         # Open file dialog to select save location
         options = QFileDialog.Options()
-        if self.filepath!=None:
-            path=os.path.dirname(self.filepath)
+        if self.filepath != None:
+            path = os.path.dirname(self.filepath)
         else:
-            path="" 
+            path = ""
         filepath, _ = QFileDialog.getSaveFileName(
             self,
             "Save Movie",
@@ -394,7 +407,7 @@ class HDF5Plotter(QMainWindow):
             def update_frame(frame):
                 self.current_frame = frame
                 self.plot_frame()
-                return self.canvas,
+                return (self.canvas,)
 
             # Create the animation
             ani = FuncAnimation(
@@ -408,9 +421,13 @@ class HDF5Plotter(QMainWindow):
             # Save the animation
             try:
                 if filepath.endswith(".gif"):
-                    ani.save(filepath, writer="pillow", fps=10, dpi = self.canvas.figure.dpi)
+                    ani.save(
+                        filepath, writer="pillow", fps=10, dpi=self.canvas.figure.dpi
+                    )
                 else:
-                    ani.save(filepath, writer="ffmpeg", fps=10, dpi= self.canvas.figure.dpi)
+                    ani.save(
+                        filepath, writer="ffmpeg", fps=10, dpi=self.canvas.figure.dpi
+                    )
                 # Show success popup
                 msg = QMessageBox(self)
                 msg.setIcon(QMessageBox.Information)
@@ -426,14 +443,14 @@ class HDF5Plotter(QMainWindow):
                 msg.setText(f"Failed to save the movie:\n{str(e)}")
                 msg.setStandardButtons(QMessageBox.Ok)
                 msg.exec_()
-            
+
     def save_plot(self):
         # Open file dialog to select save location
         options = QFileDialog.Options()
-        if self.filepath!=None:
-            path=os.path.dirname(self.filepath)
+        if self.filepath != None:
+            path = os.path.dirname(self.filepath)
         else:
-            path=""    
+            path = ""
         filepath, _ = QFileDialog.getSaveFileName(
             self,
             "Save Plot",
@@ -443,8 +460,9 @@ class HDF5Plotter(QMainWindow):
         )
         if filepath:
             # Save the figure
-            self.canvas.figure.savefig(filepath,  
-                dpi=self.canvas.figure.dpi,  bbox_inches=None)
+            self.canvas.figure.savefig(
+                filepath, dpi=self.canvas.figure.dpi, bbox_inches=None
+            )
             print(f"Plot saved to {filepath}")
             # Show confirmation popup
             msg = QMessageBox()
@@ -456,10 +474,10 @@ class HDF5Plotter(QMainWindow):
                 self.geometry().center().x() - 150,  # Adjust width offset
                 self.geometry().center().y() - 75,  # Adjust height offset
                 300,  # Width of the popup
-                150   # Height of the popup
+                150,  # Height of the popup
             )
             msg.exec_()
-            
+
     def load_file(self):
         options = QFileDialog.Options()
         self.filepath, _ = QFileDialog.getOpenFileName(
@@ -495,20 +513,22 @@ class HDF5Plotter(QMainWindow):
         self.vmax = self.hdf5.vmax
         self.plot_timeseries(self.quantity)
         self.plot_frame()
-        
-    def plot_timeseries(self,quantity):
-        y_value=self.hdf5.h5_data['timeseries'][quantity][1:]
+
+    def plot_timeseries(self, quantity):
+        y_value = self.hdf5.h5_data["timeseries"][quantity][1:]
         self.ax2.clear()
-        self.ax2.plot(self.timestamps-self.timestamps[0],y_value)
-        if len(quantity)>1:
-            if len(quantity[1:])>1:
+        self.ax2.plot(self.timestamps - self.timestamps[0], y_value)
+        if len(quantity) > 1:
+            if len(quantity[1:]) > 1:
                 self.ax2.set_ylabel(rf"${quantity[0]}_{{\{quantity[1:]}}}$")
             else:
-                self.ax2.set_ylabel(rf"${quantity[0]}_{{{quantity[1:]}}}$")    
+                self.ax2.set_ylabel(rf"${quantity[0]}_{{{quantity[1:]}}}$")
         else:
             self.ax2.set_ylabel(quantity)
-        self.ax2.set_xlabel('Days')
-        self.vline=self.ax2.axvline(self.timestamps[0]-self.timestamps[0],color='red')
+        self.ax2.set_xlabel("Days")
+        self.vline = self.ax2.axvline(
+            self.timestamps[0] - self.timestamps[0], color="red"
+        )
         self.canvas.draw()
 
     def plot_frame(self):
@@ -558,9 +578,7 @@ class HDF5Plotter(QMainWindow):
         timestamp = self.timestamps[self.current_frame]
         self.ax0.clear()
         self.ax1.clear()
-        two_D_X, two_D_Y, two_D_data = self.hdf5.get_two_D_data(
-            projection="ecliptic"
-        )
+        two_D_X, two_D_Y, two_D_data = self.hdf5.get_two_D_data(projection="ecliptic")
         mesh0 = self.ax0.pcolormesh(
             two_D_X,
             two_D_Y,
@@ -595,42 +613,48 @@ class HDF5Plotter(QMainWindow):
         )
         self.ax1.set_xlabel(r"X ($R_\odot$)")
         self.ax1.set_ylabel(r"Z ($R_\odot$)")
-        if self.cbar!=None:
+        if self.cbar != None:
             try:
                 self.cbar.remove()
             except:
                 pass
         self.cbar = self.figure.colorbar(
             mesh1,
-            ax=[self.ax0,self.ax1],
+            ax=[self.ax0, self.ax1],
             orientation="vertical",
             pad=0.01,
             shrink=0.8,
             aspect=30,
         )
-        theta=np.linspace(0,2*np.pi,1000)
-        self.ax0.plot(21.5*np.cos(theta),21.5*np.sin(theta),color='k')
-        self.ax1.plot(21.5*np.cos(theta),21.5*np.sin(theta),color='k')
-        
+        theta = np.linspace(0, 2 * np.pi, 1000)
+        self.ax0.plot(21.5 * np.cos(theta), 21.5 * np.sin(theta), color="k")
+        self.ax1.plot(21.5 * np.cos(theta), 21.5 * np.sin(theta), color="k")
+
         time_mjd = Time(timestamp, format="mjd")
         isot = time_mjd.isot
-        self.figure.suptitle(cmap_title+
-            ", Time: "
+        self.figure.suptitle(
+            cmap_title
+            + ", Time: "
             + str(isot.split("T")[0])
             + " "
-            + str(isot.split("T")[1].split(".")[0]),y=0.98
+            + str(isot.split("T")[1].split(".")[0]),
+            y=0.98,
         )
-        rate=0.9856 
-        time_diff=self.timestamps[self.current_frame]-self.hdf5.mjd_times[0]
-        if self.vline!=None:
+        rate = 0.9856
+        time_diff = self.timestamps[self.current_frame] - self.hdf5.mjd_times[0]
+        if self.vline != None:
             self.vline.remove()
-        self.vline=self.ax2.axvline(self.timestamps[self.current_frame]-self.timestamps[0],color='red')
-        earth_X=214*np.cos(np.deg2rad(rate)*time_diff)
-        earth_Y=214*np.sin(np.deg2rad(rate)*time_diff)
-        self.ax0.scatter(earth_X,earth_Y,color='green',marker='o',s=80,label='Earth')
-        self.ax1.scatter(earth_X,0,color='green',marker='o',s=80,label='Earth')
-        self.ax0.legend(loc='upper right')
-        self.ax1.legend(loc='upper right')
+        self.vline = self.ax2.axvline(
+            self.timestamps[self.current_frame] - self.timestamps[0], color="red"
+        )
+        earth_X = 214 * np.cos(np.deg2rad(rate) * time_diff)
+        earth_Y = 214 * np.sin(np.deg2rad(rate) * time_diff)
+        self.ax0.scatter(
+            earth_X, earth_Y, color="green", marker="o", s=80, label="Earth"
+        )
+        self.ax1.scatter(earth_X, 0, color="green", marker="o", s=80, label="Earth")
+        self.ax0.legend(loc="upper right")
+        self.ax1.legend(loc="upper right")
         self.ax0.set_xlim(-230, 230)
         self.ax0.set_ylim(-230, 230)
         self.ax0.set_aspect("equal")
@@ -638,7 +662,6 @@ class HDF5Plotter(QMainWindow):
         self.ax1.set_ylim(-230, 230)
         self.ax1.set_aspect("equal")
         self.canvas.draw()
-        
 
     def prev_frame(self):
         if self.current_frame > 0:
@@ -669,9 +692,13 @@ class HDF5Plotter(QMainWindow):
             self.timer.start(self.speed_slider.value())
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
+def main():
+    app = QApplication(["gamera-gui"])
     app.setStyleSheet("QWidget { font-size: 16px; }")
     window = HDF5Plotter()
     window.show()
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()

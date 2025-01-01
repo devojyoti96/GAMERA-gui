@@ -5,7 +5,7 @@
   <img src="https://via.placeholder.com/200x100.png?text=GAMERA" alt="GAMERA Logo" width="200">
 </p>
 
-The **GAMERA Simulation Viewer** is a PyQt5-based GUI application designed to visualize and analyze GAMERA simulation HDF5 files. It provides functionalities to load, navigate, and plot data interactively.
+The **GAMERA-gui : GAMERA Simulation Viewer** is a python-based GUI application designed to visualize and analyze GAMERA simulation HDF5 files. It provides functionalities to load, navigate, and plot data interactively.
 
 ---
 
@@ -24,34 +24,38 @@ The **GAMERA Simulation Viewer** is a PyQt5-based GUI application designed to vi
 
 ---
 
-## 📦 Installation
+## 🚀 Installation
+
+To install and set up **GAMERA-gui**, follow these steps:
 
 ### Prerequisites
+- Python 3.7 or higher
+- Git
+- Required Python libraries (listed in `requirements.txt`)
 
-- Python 3.7 or later
-- Required Python packages:
-  - `numpy`
-  - `h5py`
-  - `matplotlib`
-  - `PyQt5`
-  - `astropy`
-
-### Steps
-
-1. Clone the repository or download the script:
+### Steps to install from PyPI
    ```bash
-   git clone https://github.com/username/GAMERA-gui.git
+   pip install GAMERA-gui
+   ```
+
+### Steps to install from the repository
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/devojyoti96/GAMERA-gui.git
    cd GAMERA-gui
    ```
-2. Install the required dependencies:
+
+2. Install dependencies:
    ```bash
-   pip install numpy h5py matplotlib PyQt5 astropy
+   pip install -r requirements.txt
    ```
-3. Run the application:
+---
+
+### Run the application
    ```bash
    gamera-gui
    ```
-
 ---
 
 ## 🛠 Usage

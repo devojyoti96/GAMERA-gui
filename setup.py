@@ -9,6 +9,12 @@ setup(
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     url="https://github.com/devojyoti96/GAMERA-gui",  # Replace with your repo URL
+    py_modules=["gamera_gui"],              # The script name (without .py)
+    entry_points={
+        "console_scripts": [
+            "gamera-gui = gamera_gui:main",  # Command-line entry point
+        ]
+    },
     packages=find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -24,4 +30,3 @@ setup(
         "astropy",
     ],
 )
-

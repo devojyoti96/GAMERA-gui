@@ -46,6 +46,11 @@ To install and set up **GAMERA-gui**, follow these steps:
    ```bash
    pip install -r requirements.txt
    ```
+
+3. Install the application:
+   ```bash
+   pip install ./
+   ``` 
 ---
 
 ### Run the application

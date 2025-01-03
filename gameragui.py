@@ -693,11 +693,11 @@ class HDF5Plotter(QMainWindow):
 
 
 def main():
-    app = QApplication(["gamera-gui"])
+    app = QApplication([])
     app.setStyleSheet("QWidget { font-size: 16px; }")
     window = HDF5Plotter()
     window.show()
-    sys.exit(app.exec_())
+    app.exec_()
 
 
 if __name__ == "__main__":
